@@ -6,10 +6,7 @@ package Calcul;
  * Implémente l'interface OperationInterface pour définir le comportement de l'opération.
  */
 public class Soustraction extends Regles implements calcul {
-    /*@Override
-    public boolean ContainsNonDigitNumbers() {
-        return super.ContainsNonDigitNumbers();
-    }*/
+
     @Override
     public boolean isAllowed() {
         return true;

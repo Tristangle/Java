@@ -26,39 +26,37 @@ public class demande {
     }
 
     public LinkedList<Double> analyserOperation() {
-            LinkedList<Double> partition = new LinkedList<>();
+        LinkedList<Double> partition = new LinkedList<>();
+        double nombreCourant = 0;
+        boolean isNombreEnCours = false;
+        int signe = 1; // Pour gérer les signes + et - du nombre courant
 
-            for (int i = 0; i < demandeList.size(); i++) {
-                char currentChar = demandeList.get(i);
+        for (int i = 0; i < demandeList.size(); i++) {
+            char currentChar = demandeList.get(i);
 
-                if (Character.isDigit(currentChar)) {
-                    // Si le caractère est un chiffre, ajoutez-le à la partition
-                    partition.add((double) Character.getNumericValue(currentChar));
-                } else {
-                    // Si le caractère est un opérateur, redirigez l'opération avec deux opérandes
-                    OperationFactory operationFactory = new OperationFactory();
-                    calcul operation = (calcul) operationFactory.redirigerOperation(currentChar);
-
-                    // Assurez-vous qu'il y a au moins deux opérandes dans la partition
-                    if (partition.size() < 2) {
-                        throw new IllegalStateException("Pas assez d'opérandes dans la partition.");
-                    }
-
-                    // Récupérez les deux derniers éléments de la partition pour les utiliser comme opérandes
-                    double operand2 = partition.removeLast();
-                    double operand1 = partition.removeLast();
-
-                    // Appliquez l'opération et ajoutez le résultat à la partition
-                    double result = operation.operation(operand1, operand2);
-                    partition.add(result);
+            if (Character.isDigit(currentChar) || currentChar == '.') {
+                // Si le caractère est un chiffre ou un point, ajoutez-le au nombre courant
+                isNombreEnCours = true;
+            }  else if (currentChar == '*' || currentChar == '/') {
+                // Si le caractère est un opérateur, ajoutez le nombre courant à la partition
+                if (isNombreEnCours) {
+                    partition.add(signe * nombreCourant);
+                    isNombreEnCours = false;
+                    nombreCourant = 0;
                 }
+                // Ajoutez l'opérateur à la partition
+                partition.add((double) currentChar);
+            } else {
+                throw new IllegalArgumentException("Caractère non supporté : " + currentChar);
             }
-
-            // Vérifiez que la partition contient au moins un élément après le traitement
-            if (partition.isEmpty()) {
-                throw new IllegalStateException("Pas assez d'opérandes dans la partition.");
-            }
-
-            return partition;
         }
+
+        // Ajoutez le dernier nombre à la partition s'il y en a un
+        if (isNombreEnCours) {
+            partition.add(signe * nombreCourant);
+        }
+
+        return partition;
+    }
+
 }
